@@ -1,0 +1,69 @@
+services:
+  onfly_trip_challenge_backend:
+    build:
+      args:
+        user: onfly_trip_user
+        uid: 1000
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: onfly_trip_challenge_backend
+    image: onfly_trip_challenge_backend_image
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - onfly_trip_challenge_db
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - application
+  onfly_trip_challenge_webserver:
+    image: nginx:alpine
+    container_name: onfly_trip_challenge_webserver_container
+    restart: unless-stopped
+    ports:
+      - "6162:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker-compose/nginx/:/etc/nginx/conf.d
+    depends_on:
+      - onfly_trip_challenge_backend
+    networks:
+      - application
+  onfly_trip_challenge_db:
+    image: mysql:latest
+    container_name: onfly_trip_challenge_db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=onfly_trip_challenge_password
+      - MYSQL_DATABASE=onfly_trip_challenge_db
+      - MYSQL_USER=onfly_trip_challenge_user
+      - MYSQL_PASSWORD=onfly_trip_challenge_password
+    networks:
+      - application
+    volumes:
+      - onfly_trip_challenge_db_data:/var/lib/mysql
+  php_my_admin:
+    image: phpmyadmin:latest
+    container_name: onfly_trip_challenge_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8363:80"
+    environment:
+      - PMA_HOST=onfly_trip_challenge_db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=onfly_trip_challenge_password
+    depends_on:
+      - onfly_trip_challenge_db
+    networks:
+      - application
+volumes:
+  onfly_trip_challenge_db_data:
+    driver: local 
+networks:
+  application:
+    driver: bridge
