@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
@@ -31,11 +32,41 @@ class AuthController extends Controller
             return response()->json(['error' => 'Um erro inesperado ocorreu.'], 500);
         }
     }
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
+        ], [
+            'email.required'    => 'Por favor, insira seu e-mail.',
+            'email.email'       => 'Informe um e-mail válido.',
+            'password.required' => 'Por favor, insira sua senha.'
+        ]);
+
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Credenciais inválidas.'], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Não foi possivel efetuar login.'], 500);
+        }
+
+        return $this->respondWithToken($token);
+    }
 
     public function logout()
     {
         auth()->logout();
 
         return response()->json(['message' => 'Usuário deslogado com sucesso.']);
+    }
+
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'token' => $token,
+            'type' => 'Bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
     }
 }
