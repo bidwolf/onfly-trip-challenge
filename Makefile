@@ -18,6 +18,13 @@ backend-bash:
 	@echo "Acessando o terminal do backend..."
 	docker-compose exec onfly_trip_challenge_backend bash
 
+setup-backend: build up
+	@echo "Configurando ambiente do backend..."
+	docker-compose exec onfly_trip_challenge_backend composer install
+	docker-compose exec onfly_trip_challenge_backend php artisan key:generate
+	docker-compose exec onfly_trip_challenge_backend php artisan migrate --force
+	docker-compose exec onfly_trip_challenge_backend php artisan jwt:secret
+	@echo "Backend pronto para uso!"
 # --- Testes ---
 
 # Executa os testes PHPUnit
@@ -31,7 +38,6 @@ test: build
 
 # --- Limpeza ---
 
-# Limpa volumes e imagens (cuidado ao usar em produção!)
 clean:
 	@echo "Limpando volumes e imagens..."
 	docker-compose down --volumes --rmi all

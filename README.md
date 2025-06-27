@@ -62,11 +62,19 @@ Para instalar e configurar o ambiente de desenvolvimento do projeto, siga os pas
     ```bash
     docker-compose exec onfly_trip_challenge_backend composer install
     ```
-4. Gere a API_KEY do Laravel:
+4. Gere a API_KEY do Laravel e o secret do JWT:
     ```bash
     docker-compose exec onfly_trip_challenge_backend php artisan key:generate
+    docker-compose exec onfly_trip_challenge_backend php artisan jwt:secret
     ```
 5. Execute as migrations do banco de dados:
     ```bash
     docker-compose exec onfly_trip_challenge_backend php artisan migrate
     ```
+
+>[!TIP]
+> Adicionei um arquivo Makefile na raiz do projeto para facilitar alguns comandos comuns, como entrar no contêiner do backend, executar testes, entre outros. Você pode usar comandos como `make backend` para acessar o contêiner do backend ou `make test` para executar os testes.
+> Para ver todos os comandos disponíveis, execute:
+```bash
+make help
+```
