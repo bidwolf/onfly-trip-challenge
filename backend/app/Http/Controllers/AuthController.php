@@ -31,4 +31,11 @@ class AuthController extends Controller
             return response()->json(['error' => 'Um erro inesperado ocorreu.'], 500);
         }
     }
+
+    public function logout()
+    {
+        auth()->logout();
+
+        return response()->json(['message' => 'Usuário deslogado com sucesso.']);
+    }
 }
