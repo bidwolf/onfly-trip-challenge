@@ -6,8 +6,8 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
