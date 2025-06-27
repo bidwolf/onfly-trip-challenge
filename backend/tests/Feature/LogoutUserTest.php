@@ -33,11 +33,50 @@ class LogoutUserTest extends TestCase
         ];
         $userResponse = $this->post(route('register'), $data);
         $token = $userResponse['token'];
-        $authenticatedResponse = $this->getJson(uri: '/api/user', headers: ['Authorization' => "bearer $token"]);
+        $authenticatedResponse = $this->getJson(uri: route('me'), headers: ['Authorization' => "bearer $token"]);
         $authenticatedResponse->assertSuccessful();
         $logoutResponse = $this->postJson(uri: route('logout'), headers: ['Authorization' => "bearer $token"]);
         $logoutResponse->assertSuccessful();
         $this->assertEquals('Usuário deslogado com sucesso.', $logoutResponse['message']);
+    }
+    /**
+     * Testing user log in then logout
+     */
+    public function test_user_log_in_then_logout(): void
+    {
+        $passwordFake = 'fakepassword';
+        $user = User::factory()->create(['password' => $passwordFake]);
+        $loginResponse = $this->postJson(route('login'), [
+            'email' => $user->email,
+            'password' => $passwordFake
+        ]);
+        $loginResponse->assertSuccessful();
+        $token = $loginResponse['token'];
+        $authenticatedResponse = $this->getJson(uri: route('me'), headers: ['Authorization' => "bearer $token"]);
+        $authenticatedResponse->assertSuccessful();
+        $logoutResponse = $this->postJson(uri: route('logout'), headers: ['Authorization' => "bearer $token"]);
+        $logoutResponse->assertSuccessful();
+        $this->assertEquals('Usuário deslogado com sucesso.', $logoutResponse['message']);
+    }
+    /**
+     * Testing user gets 401 in protected routes after logout
+     */
+    public function test_user_unauthorized_after_logout(): void
+    {
+        $passwordFake = 'fakepassword';
+        $user = User::factory()->create(['password' => $passwordFake]);
+        $loginResponse = $this->postJson(route('login'), [
+            'email' => $user->email,
+            'password' => $passwordFake
+        ]);
+        $loginResponse->assertSuccessful();
+        $token = $loginResponse['token'];
+        $authenticatedResponse = $this->getJson(uri: route('me'), headers: ['Authorization' => "bearer $token"]);
+        $authenticatedResponse->assertSuccessful();
+        $logoutResponse = $this->postJson(uri: route('logout'), headers: ['Authorization' => "bearer $token"]);
+        $logoutResponse->assertSuccessful();
+        $newrequest = $this->getJson(uri: route('me'), headers: ['Authorization' => "bearer $token"]);
+        $newrequest->assertStatus(401);
     }
     /**
      * Testing unauthenticated user trying to logout
