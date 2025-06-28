@@ -1,5 +1,5 @@
 # Here I'm using the fpm base image to build a PHP application.
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 # Install necessary tools for using Composer
 
 ARG user
