@@ -19,5 +19,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        User::factory()->isAdmin()->create([
+            'name' => 'Lucca',
+            'email' => 'lucca@testOnfly.com',
+            'password' => 'onflyTest123!'
+        ]);
     }
 }
