@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\TravelOrder;
 
+use App\Enum\TravelOrderStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -46,6 +47,15 @@ class CreateTravelOrderTest extends TestCase
             ],
             'message'
         ]);
+    }
+    /**
+     * A created order should always start with status Pending
+     */
+    public function test_created_order_starts_with_pending_status(): void
+    {
+        $response = $this->actingAs($this->authenticatedUser)->postJson(uri: route('travel-orders.store'), data: $this->well_formated_order_dto);
+        $response->assertSuccessful();
+        $this->assertEquals(TravelOrderStatus::Pending->value, $response['data']['status']);
     }
     /**
      * A request without a authorization token cannot be authorized
