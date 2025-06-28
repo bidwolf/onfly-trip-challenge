@@ -49,6 +49,6 @@ class RegisterUserTest extends TestCase
         $RegistrationResponse = $this->post('/api/auth/register', $data);
         $RegistrationResponse->assertStatus(201); # Cria um usuário
         $duplicatedRegisterResponse = $this->post('/api/auth/register', $data); # Tenta criar outro usuário com email igual
-        $duplicatedRegisterResponse->assertStatus(302)->assertSessionHasErrors('email');
+        $duplicatedRegisterResponse->assertStatus(422)->assertJsonValidationErrors('email');
     }
 }
