@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -54,7 +55,7 @@ class AuthController extends Controller
 
         return $this->respondWithToken($token);
     }
-    public function me(Request $request)
+    public function me()
     {
         try {
             $user = Auth::user();
@@ -73,7 +74,16 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Usuário deslogado com sucesso.']);
     }
-
+    public function refresh()
+    {
+        try {
+            return $this->respondWithToken(auth()->refresh());
+        } catch (TokenExpiredException $e) {
+            return response()->json(['error' => 'Token expirado. Por favor, faça login novamente.'], 401);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token inválido ou ausente. Por favor, faça login novamente.'], 401);
+        }
+    }
     protected function respondWithToken($token)
     {
         return response()->json([
