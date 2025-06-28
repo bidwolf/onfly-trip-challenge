@@ -48,7 +48,7 @@ class LoginUserTest extends TestCase
         $email = $this->faker->safeEmail;
         $this->assertDatabaseCount('users', 0);
         $loginResponse = $this->postJson(route('login'), ['email' => $email, 'password' => $password]);
-        $loginResponse->assertStatus(401);
+        $loginResponse->assertUnauthorized();
     }
     /**
      * Test existent user with wrong password receive unauthorized status code
@@ -61,7 +61,7 @@ class LoginUserTest extends TestCase
         $successLoginResponse = $this->postJson(route('login'), ['email' => $user->email, 'password' => $password]);
         $successLoginResponse->assertSuccessful();
         $unauthorizedloginResponse = $this->postJson(route('login'), ['email' => $user->email, 'password' => $wrongPassword]);
-        $unauthorizedloginResponse->assertStatus(401);
+        $unauthorizedloginResponse->assertUnauthorized();
     }
     /**
      * Test logged user can use /api/user endpoint

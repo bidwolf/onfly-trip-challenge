@@ -32,7 +32,7 @@ class RefreshTokenTest extends TestCase
     public function test_unauthorized_access_to_refresh_route(): void
     {
         $response = $this->post(route('refresh'));
-        $response->assertStatus(401);
+        $response->assertUnauthorized();
     }
     protected function get_user_token(): string
     {
@@ -97,7 +97,7 @@ class RefreshTokenTest extends TestCase
             uri: route('refresh'),
             headers: ['Authorization' => "Bearer {$token}"]
         );
-        $refreshResponse->assertStatus(401);
+        $refreshResponse->assertUnauthorized();
         Carbon::setTestNow(null); // reset time
     }
 }

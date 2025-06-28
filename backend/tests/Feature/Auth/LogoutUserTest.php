@@ -76,7 +76,7 @@ class LogoutUserTest extends TestCase
         $logoutResponse = $this->postJson(uri: route('logout'), headers: ['Authorization' => "bearer $token"]);
         $logoutResponse->assertSuccessful();
         $newrequest = $this->getJson(uri: route('me'), headers: ['Authorization' => "bearer $token"]);
-        $newrequest->assertStatus(401);
+        $newrequest->assertUnauthorized();
     }
     /**
      * Testing unauthenticated user trying to logout
@@ -84,6 +84,6 @@ class LogoutUserTest extends TestCase
     public function test_unauthenticated_logout(): void
     {
         $logoutResponse = $this->postJson(uri: route('logout'));
-        $logoutResponse->assertStatus(401);
+        $logoutResponse->assertUnauthorized();
     }
 }
