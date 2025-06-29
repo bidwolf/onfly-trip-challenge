@@ -53,7 +53,7 @@ class ShowTravelOrderTest extends TestCase
         ]);
     }
     /**
-     * A travel order should be returned by its own user creator.
+     * A common user cannot see a travel order from other users.
      */
     public function test_travel_order_should_not_be_returned_to_other_common_user(): void
     {
@@ -61,13 +61,13 @@ class ShowTravelOrderTest extends TestCase
         assertEquals(TravelOrder::find($this->existingOrderId)->id, $this->existingOrderId);
         $other_user = User::factory()->create();
         $response = $this->actingAs($other_user)->get(route('travel-orders.show', ['travel_order' => $this->existingOrderId]));
-        $response->assertStatus(404);
+        $response->assertNotFound();
         $response->assertJsonStructure([
             'message'
         ]);
     }
     /**
-     * A travel order should be returned by its own user creator.
+     * A travel order should be returned to other user with admin permission.
      */
     public function test_travel_order_should_be_returned_to_other_admin_user(): void
     {
@@ -89,6 +89,19 @@ class ShowTravelOrderTest extends TestCase
                     'email'
                 ]
             ]
+        ]);
+    }
+    /**
+     * A unauthenticated user cannot see any travelOrder
+     */
+    public function test_travel_order_should_not_be_returned_to_unauthenticated_users(): void
+    {
+        assertNotNull($this->existingOrderId);
+        assertEquals(TravelOrder::find($this->existingOrderId)->id, $this->existingOrderId);
+        $response = $this->getJson(route('travel-orders.show', ['travel_order' => $this->existingOrderId]));
+        $response->assertUnauthorized();
+        $response->assertJsonStructure([
+            'message'
         ]);
     }
 }
