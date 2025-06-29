@@ -38,7 +38,7 @@ class ShowTravelOrderTest extends TestCase
     public function test_travel_order_should_be_returned_to_owner(): void
     {
         assertNotNull($this->existingOrderId);
-        assertEquals(1, $this->existingOrderId);
+        assertEquals(TravelOrder::find($this->existingOrderId)->id, $this->existingOrderId);
         $response = $this->actingAs($this->user)->get(route('travel-orders.show', ['travel_order' => $this->existingOrderId]));
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -58,7 +58,7 @@ class ShowTravelOrderTest extends TestCase
     public function test_travel_order_should_not_be_returned_to_other_common_user(): void
     {
         assertNotNull($this->existingOrderId);
-        assertEquals(1, $this->existingOrderId);
+        assertEquals(TravelOrder::find($this->existingOrderId)->id, $this->existingOrderId);
         $other_user = User::factory()->create();
         $response = $this->actingAs($other_user)->get(route('travel-orders.show', ['travel_order' => $this->existingOrderId]));
         $response->assertStatus(404);
@@ -72,7 +72,7 @@ class ShowTravelOrderTest extends TestCase
     public function test_travel_order_should_be_returned_to_other_admin_user(): void
     {
         assertNotNull($this->existingOrderId);
-        assertEquals(1, $this->existingOrderId);
+        assertEquals(TravelOrder::find($this->existingOrderId)->id, $this->existingOrderId);
         $other_user = User::factory()->isAdmin()->create();
         $response = $this->actingAs($other_user)->get(route('travel-orders.show', ['travel_order' => $this->existingOrderId]));
         $response->assertStatus(200);

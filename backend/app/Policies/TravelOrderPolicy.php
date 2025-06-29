@@ -32,7 +32,6 @@ class TravelOrderPolicy
      */
     public function view(User $user, TravelOrder $order): bool
     {
-        Log::info('vendo o travel na policy', ['order' => $order]);
         return $user->id === $order->user_id;
     }
 
