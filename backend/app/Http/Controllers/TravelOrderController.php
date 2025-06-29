@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DTO\TravelOrderDTO;
+use App\Enum\TravelOrderStatus;
 use App\Http\Requests\StoreTravelOrderRequest;
 use App\Models\TravelOrder;
 use App\Services\TravelOrderService;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Support\Carbon;
 
 class TravelOrderController extends Controller
 {
@@ -22,7 +24,21 @@ class TravelOrderController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $request = request();
+        $filters = $request->validate([
+            'status'      => ['nullable|string'],
+            'destination' => 'nullable|string',
+            'start_date'  => 'nullable|date|date_format:Y-m-d',
+            'end_date'    => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+        ]);
+
+        $status      = array_key_exists('status', $filters) ? TravelOrderStatus::tryFrom($filters['status']) : null;
+        $destination = $filters['destination'] ?? null;
+        $start_date  = isset($filters['start_date']) ? Carbon::parse($filters['start_date']) : null;
+        $end_date    = isset($filters['end_date'])   ? Carbon::parse($filters['end_date'])   : null;
+        return $this->service->listOrders($user, $status, $destination, $start_date, $end_date);
+        return $this->service->listOrders();
     }
 
     /**

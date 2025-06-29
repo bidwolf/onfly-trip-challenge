@@ -44,6 +44,8 @@ class CreateTravelOrderTest extends TestCase
                 'destination',
                 'departure_date',
                 'return_date',
+                'user_id',
+                'created_at'
             ],
             'message'
         ]);

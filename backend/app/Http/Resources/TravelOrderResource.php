@@ -21,6 +21,8 @@ class TravelOrderResource extends JsonResource
             'destination' => $this->destination,
             'departure_date' => $this->departure_date,
             'return_date' => $this->return_date,
+            'user_id' => $this->user_id,
+            'created_at' => $this->created_at
         ];
     }
 }
