@@ -48,7 +48,9 @@ class ShowTravelOrderTest extends TestCase
                 "status",
                 "destination",
                 "departure_date",
-                "return_date"
+                "return_date",
+                "user_id",
+                "created_at",
             ]
         ]);
     }
@@ -84,6 +86,8 @@ class ShowTravelOrderTest extends TestCase
                 "destination",
                 "departure_date",
                 "return_date",
+                "user_id",
+                "created_at",
                 "user" => [
                     'name',
                     'email'
