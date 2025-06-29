@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 class TravelOrderController extends Controller
 {
@@ -47,9 +48,9 @@ class TravelOrderController extends Controller
     public function store(StoreTravelOrderRequest $request)
     {
 
-        $orderDTO = TravelOrderDTO::fromArray($request->validated());
+        $travel_orderDTO = TravelOrderDTO::fromArray($request->validated());
         $user = Auth::user();
-        return $this->service->createOrder($user, $orderDTO);
+        return $this->service->createOrder($user, $travel_orderDTO);
     }
 
     /**
@@ -58,9 +59,6 @@ class TravelOrderController extends Controller
     public function show(TravelOrder $travel_order)
     {
         try {
-            if (!$travel_order->empty) {
-                $travel_order = TravelOrder::with('user')->find(request('travel_order'));
-            }
             if (Auth::user()->cannot('view', $travel_order) || !$travel_order) {
                 throw new NotFoundHttpException('Não foi possível encontrar o pedido solicitado');
             }
@@ -88,11 +86,26 @@ class TravelOrderController extends Controller
             );
         }
     }
-
+    /**
+     * Method to approve the current order
+     */
+    public function approve(TravelOrder $travel_order)
+    {
+        Gate::authorize('approve-travel-order', $travel_order);
+        return $this->service->approveOrder($travel_order);
+    }
+    /**
+     * Method to cancel the current order
+     */
+    public function cancel(TravelOrder $travel_order)
+    {
+        Gate::authorize('cancel-travel-order', $travel_order);
+        return $this->service->cancelOrder($travel_order);
+    }
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TravelOrder $travelOrder)
+    public function update(Request $request, TravelOrder $travel_order)
     {
         //
     }
@@ -100,7 +113,7 @@ class TravelOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TravelOrder $travelOrder)
+    public function destroy(TravelOrder $travel_order)
     {
         //
     }
