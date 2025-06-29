@@ -143,9 +143,8 @@ class ListTravelOrdersTest extends TestCase
     }
     public function test_filter_travel_orders_by_status(): void
     {
-        // create orders with different statuses
-        $pendingOrder  = TravelOrder::factory()->for($this->user)->create(['status' => TravelOrderStatus::Pending->value]);
-        $approvedOrder = TravelOrder::factory()->for($this->user)->create(['status' => TravelOrderStatus::Approved->value]);
+        TravelOrder::factory()->for($this->user)->create(['status' => TravelOrderStatus::Pending->value]);
+        TravelOrder::factory()->for($this->user)->create(['status' => TravelOrderStatus::Approved->value]);
 
         $response = $this->actingAs($this->user)
             ->getJson(route('travel-orders.index', ['status' => TravelOrderStatus::Pending->value]));
@@ -153,7 +152,6 @@ class ListTravelOrdersTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => [['id', 'status', 'destination', 'departure_date', 'return_date']]]);
 
-        // only pending orders are returned
         $this->assertAllResourcesExistsWithKeyValue(
             key: 'status',
             value: TravelOrderStatus::Pending->value,
@@ -168,8 +166,8 @@ class ListTravelOrdersTest extends TestCase
 
     public function test_filter_travel_orders_by_destination(): void
     {
-        $nyOrder = TravelOrder::factory()->for($this->user)->create(['destination' => 'New York']);
-        $laOrder = TravelOrder::factory()->for($this->user)->create(['destination' => 'Los Angeles']);
+        TravelOrder::factory()->for($this->user)->create(['destination' => 'New York']);
+        TravelOrder::factory()->for($this->user)->create(['destination' => 'Los Angeles']);
 
         $response = $this->actingAs($this->user)
             ->getJson(route('travel-orders.index', ['destination' => 'New York']));
