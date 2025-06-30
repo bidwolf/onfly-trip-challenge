@@ -132,7 +132,7 @@ const onSubmit = form.handleSubmit(
         </FormField>
 
         <Button type="submit"
-          class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          class="w-full py-2 px-4  font-semibold rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           Cadastrar
         </Button>
 
