@@ -19,7 +19,11 @@ class TravelOrder extends Model
         'departure_date',
         'return_date',
         'user_id',
-        'status'
+        'status',
+        'price',
+        'hosting',
+        'transportation',
+        'description',
     ];
 
     public function user(): BelongsTo
