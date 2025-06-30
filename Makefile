@@ -17,7 +17,9 @@ restart: down up
 backend-bash:
 	@echo "Acessando o terminal do backend..."
 	docker-compose exec onfly_trip_challenge_backend bash
-
+frontend-bash:
+    @echo "Acessando o terminal do frontend..."
+    docker-compose exec onfly_trip_challenge_frontend bash
 setup-backend: build up
 	@echo "Configurando ambiente do backend..."
 	docker-compose exec onfly_trip_challenge_backend composer install
