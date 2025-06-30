@@ -10,7 +10,11 @@ readonly class TravelOrderDTO
     public string $requester_name,
     public string $destination,
     public Carbon $departure_date,
-    public Carbon $return_date
+    public Carbon $return_date,
+    public float $price,
+    public ?string $hosting,
+    public ?string $description,
+    public ?string $transportation
   ) {}
   /**
    * Creates the TravelOrderDTO from an array.
@@ -24,7 +28,11 @@ readonly class TravelOrderDTO
       requester_name: $data['requester_name'],
       destination: $data['destination'],
       departure_date: Carbon::parse($data['departure_date']),
-      return_date: Carbon::parse($data['return_date'])
+      return_date: Carbon::parse($data['return_date']),
+      price: $data['price'],
+      hosting: $data['hosting'],
+      transportation: $data['transportation'],
+      description: $data['description'],
     );
   }
 }
