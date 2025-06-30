@@ -153,7 +153,7 @@ const fetchTravelOrders = async () => {
     const hasFilters = filterParams.status || filterParams.destination || filterParams.start_date || filterParams.end_date
     if (hasFilters) {
       const count = response.data.length
-      toast.info(`${count} viage${count !== 1 ? 'ns' : 'm'} encontrada${count !== 1 ? 's' : ''}`)
+      toast.info(`${count} viagem${count !== 1 ? 'ns' : ''} encontrada${count !== 1 ? 's' : ''}`)
     }
   } catch (error) {
     console.error('Failed to fetch travel orders:', error)
