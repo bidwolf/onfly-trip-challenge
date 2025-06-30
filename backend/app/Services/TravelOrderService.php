@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\DTO\TravelOrderDTO;
 use App\Enum\TravelOrderStatus;
+use App\Events\TravelOrderApproved;
+use App\Events\TravelOrderCancelled;
 use App\Http\Resources\TravelOrderResource;
 use App\Models\TravelOrder;
 use App\Models\User;
@@ -115,6 +117,7 @@ class TravelOrderService implements TravelOrderServiceInterface
         'status' => TravelOrderStatus::Cancelled->value
       ]);
       DB::commit();
+      TravelOrderCancelled::dispatch($order->fresh);
       return $order->fresh()->toResource()->additional(
         ['message' => 'Pedido cancelado com sucesso.']
       );
@@ -132,6 +135,7 @@ class TravelOrderService implements TravelOrderServiceInterface
         'status' => TravelOrderStatus::Approved->value
       ]);
       DB::commit();
+      TravelOrderApproved::dispatch($order->fresh);
       return $order->fresh()->toResource()->additional(
         ['message' => 'Pedido aprovado com sucesso.']
       );
