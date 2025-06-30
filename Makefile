@@ -24,6 +24,9 @@ setup-backend: build up
 	docker-compose exec onfly_trip_challenge_backend php artisan key:generate
 	docker-compose exec onfly_trip_challenge_backend php artisan migrate --force
 	docker-compose exec onfly_trip_challenge_backend php artisan jwt:secret
+	docker-compose exec onfly_trip_challenge_backend npm install
+	docker-compose exec onfly_trip_challenge_backend npm run build
+
 	@echo "Backend pronto para uso!"
 # --- Testes ---
 
