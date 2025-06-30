@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getTravelOrderById, approveTravelOrder, cancelTravelOrder, TravelOrderStatus } from '@/services/travel-orders'
+import { getTravelOrderById, approveTravelOrder, cancelTravelOrder, type TravelOrderStatus } from '@/services/travel-orders'
 import { useAuth } from '@/composables/useAuth'
+import { useGlobalLoading } from '@/composables/useGlobalLoading'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,6 +32,7 @@ interface TravelOrder {
 const route = useRoute()
 const router = useRouter()
 const { isAdmin } = useAuth()
+const { showGlobalLoading, hideGlobalLoading } = useGlobalLoading()
 const travelOrder = ref<TravelOrder | null>(null)
 const loading = ref(true)
 const actionLoading = ref(false)
@@ -77,6 +79,7 @@ const canCancel = computed(() => {
 const approveOrder = async () => {
   if (!travelOrder.value) return
 
+  showGlobalLoading('Aprovando viagem...')
   actionLoading.value = true
   try {
     await approveTravelOrder(travelOrder.value.id)
@@ -86,12 +89,14 @@ const approveOrder = async () => {
     toast.error(error.response?.data?.message || 'Erro ao aprovar viagem')
   } finally {
     actionLoading.value = false
+    hideGlobalLoading()
   }
 }
 
 const cancelOrder = async () => {
   if (!travelOrder.value) return
 
+  showGlobalLoading('Cancelando viagem...')
   actionLoading.value = true
   try {
     await cancelTravelOrder(travelOrder.value.id)
@@ -102,6 +107,7 @@ const cancelOrder = async () => {
     toast.error(error.response?.data?.message || 'Erro ao cancelar viagem')
   } finally {
     actionLoading.value = false
+    hideGlobalLoading()
   }
 }
 
