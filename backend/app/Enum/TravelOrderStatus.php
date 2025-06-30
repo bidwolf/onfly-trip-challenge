@@ -4,7 +4,7 @@ namespace App\Enum;
 
 enum TravelOrderStatus: string
 {
-  case Cancelled = 'cancelled';
-  case Approved = 'approved';
-  case Pending = 'pending';
+  case Cancelled = 'cancelado';
+  case Approved = 'aprovado';
+  case Pending = 'pendente';
 }
