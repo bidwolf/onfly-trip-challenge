@@ -25,7 +25,11 @@ class CreateTravelOrderTest extends TestCase
                 'requester_name' => $this->faker->name,
                 'destination' => $this->faker->city,
                 'departure_date' => Carbon::tomorrow()->format('Y-m-d'),
-                'return_date' => Carbon::tomorrow()->addMonth(1)->format('Y-m-d')
+                'return_date' => Carbon::tomorrow()->addMonth(1)->format('Y-m-d'),
+                'price' => $this->faker->randomFloat(2, 0, 1000),
+                'hosting' => $this->faker->domainName,
+                'transportation' => $this->faker->domainName,
+                'description' => $this->faker->domainName,
             ];
         $this->authenticatedUser = User::factory()->create();
     }
