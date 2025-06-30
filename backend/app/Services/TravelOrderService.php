@@ -71,7 +71,11 @@ class TravelOrderService implements TravelOrderServiceInterface
         'destination' => $orderDTO->destination,
         'departure_date' => $orderDTO->departure_date,
         'return_date' => $orderDTO->return_date,
-        'status' => TravelOrderStatus::Pending
+        'status' => TravelOrderStatus::Pending,
+        'price' => $orderDTO->price,
+        'hosting' => $orderDTO->hosting,
+        'transportation' => $orderDTO->transportation,
+        'description' => $orderDTO->description,
       ];
       $created_order = TravelOrder::create($data);
       DB::commit();
