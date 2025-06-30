@@ -25,7 +25,13 @@ class TravelOrderFactory extends Factory
             'departure_date' => fake()
                 ->dateTimeBetween('now', '+1 year')
                 ->format('Y-m-d'),
-            'return_date' => fake()->dateTimeBetween('+1 year', '+2 years')->format('Y-m-d')
+            'return_date'    => fake()
+                ->dateTimeBetween('+1 year', '+2 years')
+                ->format('Y-m-d'),
+            'price'          => fake()->randomFloat(2, 0, 1000),
+            'hosting'        => fake()->company(),
+            'transportation' => fake()->randomElement(['car', 'bus', 'train', 'plane']),
+            'description'    => fake()->sentence(),
         ];
     }
 }
