@@ -18,7 +18,7 @@ services:
       - ./backend:/var/www
     networks:
       - application
-  
+
   onfly_trip_challenge_frontend:
     build:
       context: ./frontend
@@ -54,7 +54,7 @@ services:
     container_name: onfly_trip_challenge_db
     restart: always
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=onfly_trip_challenge_password
       - MYSQL_DATABASE=onfly_trip_challenge_db
@@ -81,7 +81,7 @@ services:
       - application
 volumes:
   onfly_trip_challenge_db_data:
-    driver: local 
+    driver: local
 networks:
   application:
     driver: bridge
