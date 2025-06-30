@@ -46,7 +46,3 @@ clean:
 	docker-compose down --volumes --rmi all
 	# remove todas as imagens construídas pelo compose
 
-# --- Ajuda ---
-help:
-	@echo "Comandos disponíveis:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

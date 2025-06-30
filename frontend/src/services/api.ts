@@ -1,5 +1,4 @@
 import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
-import { refresh } from './auth'
 
 const API_URL = import.meta.env.VITE_API_URL as string
 
@@ -20,7 +19,6 @@ api.interceptors.request.use(
   },
   error => Promise.reject(error),
 )
-let refreshFailed = false
 
 api.interceptors.response.use(
   (response: AxiosResponse) => response,

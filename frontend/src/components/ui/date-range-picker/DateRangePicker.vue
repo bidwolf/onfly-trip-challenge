@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
+import { DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { type DateValue } from 'reka-ui'
 
 interface Props {
   modelValue?: { start: Date | null; end: Date | null }
@@ -40,28 +41,26 @@ const displayValue = computed(() => {
   return props.placeholder
 })
 
-const calendarValue = ref<{ start: CalendarDate | undefined; end: CalendarDate | undefined }>({
+const calendarValue = ref<{ start: DateValue | undefined; end: DateValue | undefined }>({
   start: undefined,
   end: undefined
 })
 
-const handleDateSelect = (date: CalendarDate | undefined) => {
+const handleDateSelect = (date: DateValue | undefined) => {
   if (!date) return
 
   const jsDate = date.toDate(getLocalTimeZone())
 
   if (!calendarValue.value.start || (calendarValue.value.start && calendarValue.value.end)) {
-    // Start new selection
     calendarValue.value = { start: date, end: undefined }
     value.value = { start: jsDate, end: null }
   } else if (calendarValue.value.start && !calendarValue.value.end) {
-    // Complete the range
-    if (date.compare(calendarValue.value.start) >= 0) {
+    if (calendarValue.value.start && date >= calendarValue.value.start) {
       calendarValue.value.end = date
       value.value = { start: value.value.start, end: jsDate }
       isOpen.value = false
     } else {
-      // If selected date is before start, make it the new start
+
       calendarValue.value = { start: date, end: undefined }
       value.value = { start: jsDate, end: null }
     }
@@ -90,7 +89,7 @@ const clearSelection = () => {
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0" align="start">
       <div class="p-3">
-        <Calendar v-model="calendarValue.start" mode="single" @update:model-value="handleDateSelect"
+        <Calendar v-model="calendarValue.start as DateValue" mode="single" @update:model-value="handleDateSelect"
           :selected="calendarValue" class="rounded-md border" />
         <div class="flex justify-between mt-3">
           <Button variant="outline" size="sm" @click="clearSelection">

@@ -18,6 +18,23 @@ services:
       - ./backend:/var/www
     networks:
       - application
+  
+  onfly_trip_challenge_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: onfly_trip_challenge_frontend_container
+    image: onfly_trip_challenge_frontend_image
+    working_dir: /app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - onfly_trip_challenge_backend
+    volumes:
+      - ./frontend:/app
+    networks:
+      - application
   onfly_trip_challenge_webserver:
     image: nginx:alpine
     container_name: onfly_trip_challenge_webserver_container
@@ -26,6 +43,7 @@ services:
       - "6162:80"
     volumes:
       - ./backend:/var/www
+      - ./frontend/build:/app
       - ./docker-compose/nginx/:/etc/nginx/conf.d
     depends_on:
       - onfly_trip_challenge_backend
