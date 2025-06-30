@@ -32,6 +32,13 @@ export interface TravelOrdersResponse {
   data: TravelOrder[]
 }
 
+export interface TravelOrderFilters {
+  status?: string
+  destination?: string
+  start_date?: string
+  end_date?: string
+}
+
 export interface TravelOrderResponse {
   data: TravelOrder
 }
@@ -39,8 +46,26 @@ export interface TravelOrderResponse {
 /**
  * Travel Orders service calls
  */
-export const getTravelOrders = async (): Promise<TravelOrdersResponse> => {
-  const { data: result } = await api.get<TravelOrdersResponse>('/travel-orders')
+export const getTravelOrders = async (filters?: TravelOrderFilters): Promise<TravelOrdersResponse> => {
+  const params = new URLSearchParams()
+
+  if (filters?.status) {
+    params.append('status', filters.status)
+  }
+  if (filters?.destination) {
+    params.append('destination', filters.destination)
+  }
+  if (filters?.start_date) {
+    params.append('start_date', filters.start_date)
+  }
+  if (filters?.end_date) {
+    params.append('end_date', filters.end_date)
+  }
+
+  const queryString = params.toString()
+  const url = queryString ? `/travel-orders?${queryString}` : '/travel-orders'
+
+  const { data: result } = await api.get<TravelOrdersResponse>(url)
   return result
 }
 
