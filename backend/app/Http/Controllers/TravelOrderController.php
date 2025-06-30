@@ -28,7 +28,7 @@ class TravelOrderController extends Controller
         $user = Auth::user();
         $request = request();
         $filters = $request->validate([
-            'status'      => ['nullable|string'],
+            'status'      => 'nullable|string',
             'destination' => 'nullable|string',
             'start_date'  => 'nullable|date|date_format:Y-m-d',
             'end_date'    => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
