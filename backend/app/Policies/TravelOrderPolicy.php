@@ -2,10 +2,9 @@
 
 namespace App\Policies;
 
+use App\Enum\TravelOrderStatus;
 use App\Models\TravelOrder;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Log;
 
 class TravelOrderPolicy
 {
@@ -48,7 +47,7 @@ class TravelOrderPolicy
      */
     public function update(User $user, TravelOrder $order): bool
     {
-        return $user->id === $order->user_id;
+        return $user->id === $order->user_id && $order->status === TravelOrderStatus::Pending;
     }
 
     /**

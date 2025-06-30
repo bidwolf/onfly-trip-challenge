@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\DTO\TravelOrderDTO;
 use App\Enum\TravelOrderStatus;
+use App\Events\TravelOrderApproved;
+use App\Events\TravelOrderCancelled;
 use App\Http\Resources\TravelOrderResource;
 use App\Models\TravelOrder;
 use App\Models\User;
@@ -12,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * An service that is responsible to deal with Travel Orders logic
@@ -41,14 +44,25 @@ interface TravelOrderServiceInterface
     ?Carbon $start_date,
     ?Carbon $end_date,
   ): ResourceCollection;
+  /**
+   * Cancel the current travel order
+   * @param TravelOrder $order the order that is going to be cancelled 
+   */
+  public function cancelOrder(
+    TravelOrder $order
+  ): TravelOrderResource;
+  /**
+   * Aproves the current travel order
+   * @param TravelOrder $order the order that is going to be approved 
+   */
+  public function approveOrder(
+    TravelOrder $order
+  ): TravelOrderResource;
 }
 class TravelOrderService implements TravelOrderServiceInterface
 {
   public function createOrder(User $user, TravelOrderDTO $orderDTO): TravelOrderResource
   {
-    if (!$user->id) {
-      abort(401, 'O usuário não possui permissão para fazer essa requisição');
-    }
     try {
       DB::beginTransaction();
       $data = [
@@ -93,5 +107,41 @@ class TravelOrderService implements TravelOrderServiceInterface
       });
 
     return $query->get()->toResourceCollection();
+  }
+  public function cancelOrder(TravelOrder $order): TravelOrderResource
+  {
+    try {
+
+      DB::beginTransaction();
+      $order->update([
+        'status' => TravelOrderStatus::Cancelled->value
+      ]);
+      DB::commit();
+      TravelOrderCancelled::dispatch($order->fresh);
+      return $order->fresh()->toResource()->additional(
+        ['message' => 'Pedido cancelado com sucesso.']
+      );
+    } catch (\Error $e) {
+      DB::rollBack();
+      Log::error('Ocorreu um erro durante o cancelamento do pedido', ['erro' => $e->getMessage()]);
+      abort(500, 'Um erro inesperado ocorreu ao tentar cancelar este pedido. Por favor tente novamente mais tarde.');
+    }
+  }
+  public function approveOrder(TravelOrder $order): TravelOrderResource
+  {
+    try {
+      DB::beginTransaction();
+      $order->update([
+        'status' => TravelOrderStatus::Approved->value
+      ]);
+      DB::commit();
+      TravelOrderApproved::dispatch($order->fresh);
+      return $order->fresh()->toResource()->additional(
+        ['message' => 'Pedido aprovado com sucesso.']
+      );
+    } catch (\Error $e) {
+      DB::rollBack();
+      abort(500, 'Um erro inesperado ocorreu ao tentar aprovar este pedido. Por favor tente novamente mais tarde.');
+    }
   }
 }
