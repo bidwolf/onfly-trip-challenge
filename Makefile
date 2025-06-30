@@ -17,7 +17,9 @@ restart: down up
 backend-bash:
 	@echo "Acessando o terminal do backend..."
 	docker-compose exec onfly_trip_challenge_backend bash
-
+frontend-bash:
+    @echo "Acessando o terminal do frontend..."
+    docker-compose exec onfly_trip_challenge_frontend bash
 setup-backend: build up
 	@echo "Configurando ambiente do backend..."
 	docker-compose exec onfly_trip_challenge_backend composer install
@@ -35,9 +37,7 @@ setup-backend: build up
 # E roda os testes dentro do container
 test: build
 	@echo "Executando testes PHPUnit..."
-	docker-compose run --rm onfly_trip_challenge_backend ./vendor/bin/phpunit # Ajuste o caminho se necessário
-	# Se preferir rodar os testes no container existente, comente a linha acima e use a de baixo:
-	# docker-compose exec onfly_trip_challenge_backend ./vendor/bin/phpunit # Ajuste o caminho se necessário
+	docker-compose run --rm onfly_trip_challenge_backend php artisan test
 
 # --- Limpeza ---
 

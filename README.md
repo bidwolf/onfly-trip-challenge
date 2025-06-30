@@ -4,19 +4,20 @@ Gerenciamento de pedidos de viagens corporativas. Uma solução administrativa p
 
 ## Tecnologias Utilizadas
 Abaixo estão listadas as principais tecnologias utilizadas no desenvolvimento deste projeto, testes e configuração do ambiente:
-<!--
-- **Backend**: PHP 8.2, Laravel 12
-- **Frontend**: Vue.js 3, shadcnvue, Tailwind CSS, Axios
+
+- **Backend**: PHP 8.3 com Laravel 12 
+- **Frontend**: Vue.js 3, shadcnvue, Tailwind CSS, Axios, VueRouter, reverb
 - **Banco de Dados**: MySQL 8.0
 - **Testes**: PHPUnit, Pest
-- **Ambiente de Desenvolvimento**: Docker, Composer, NPM
-- **Controle de Versão**: Git, GitHub -->
+- **Ambiente de Desenvolvimento**: Docker, Composer, NPM, nginx
+- **Controle de Versão**: Git, GitHub
 
 ## Pré-requisitos
+
 Para executar este projeto, você precisa ter instalado em sua máquina:
-- **Docker**: Para criar e gerenciar contêineres.
+- [**Docker**](https://docs.docker.com/engine/install/): Para criar e gerenciar contêineres.
 - **Docker Compose**: Para orquestrar os contêineres.
-- **Git**: Para controle de versão e clonagem do repositório.
+- [**Git**](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git): Para controle de versão e clonagem do repositório.
 
 ## Instalação
 Para instalar e configurar o ambiente de desenvolvimento do projeto, siga os passos abaixo:
@@ -74,7 +75,29 @@ Para instalar e configurar o ambiente de desenvolvimento do projeto, siga os pas
 
 >[!TIP]
 > Adicionei um arquivo Makefile na raiz do projeto para facilitar alguns comandos comuns, como entrar no contêiner do backend, executar testes, entre outros. Você pode usar comandos como `make backend` para acessar o contêiner do backend ou `make test` para executar os testes.
-> Para ver todos os comandos disponíveis, execute:
-```bash
-make help
+> Idealmente utilizando sistem unix linux/macos
+>
+> Caso não conseguir utilizar os comandos configurados podem ser de grande ajuda no futuro
+
+
+### Rodando a aplicação
+
+Ao rodar os containers do docker, você já consegue utilizar os containers adequadamente ao acessar:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:6162/api
+```sh
+docker compose up -d
 ```
+>[!NOTE]
+>Você também pode optar por executar o sistema localmente com suas próprias configurações de ambiente.
+> Porém seria necessário ter o PHP instalado, além do nodeJS, e o composer.
+## Testando a aplicação
+
+Uma vez que você chegou nesse ponto parabéns você já avançou significantemente, e no cenário atual, você pode executar os testes rodando o comando abaixo:
+
+```sh
+	docker-compose run --rm onfly_trip_challenge_backend php artisan test
+```
+
+>[!TIP]
+> Também deixei disponível uma collection do postman com os endpoints desenvolvidos basta importar a collection diretemente usando o arquivo `onfly-trip-challenge.postman_collection.json` na raíz do projeto

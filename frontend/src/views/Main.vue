@@ -1,216 +1,272 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { getTravelOrders, type TravelOrderFilters } from '@/services/travel-orders'
-import { useAuth } from '@/composables/useAuth'
-import { toast } from 'vue-sonner'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import {
+  getTravelOrders,
+  type TravelOrderFilters,
+} from "@/services/travel-orders";
+import { useAuth } from "@/composables/useAuth";
+import { toast } from "vue-sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '@/components/ui/table'
-import { DateRangePicker } from '@/components/ui/date-range-picker'
-import CreateTravelOrderModal from '@/components/CreateTravelOrderModal.vue'
+  TableRow,
+} from "@/components/ui/table";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import CreateTravelOrderModal from "@/components/CreateTravelOrderModal.vue";
 
 interface TravelOrder {
-  id: number
-  destination: string
-  departure_date: string
-  return_date: string
-  status: string
-  price: number
+  id: number;
+  destination: string;
+  departure_date: string;
+  return_date: string;
+  status: string;
+  price: number;
 }
 
-const router = useRouter()
-const route = useRoute()
-const { user, logout, isAdmin } = useAuth()
-const travelOrders = ref<TravelOrder[]>([])
-const loading = ref(true)
-const createModalRef = ref<InstanceType<typeof CreateTravelOrderModal> | null>(null)
+const router = useRouter();
+const route = useRoute();
+const { user, logout, isAdmin } = useAuth();
+const travelOrders = ref<TravelOrder[]>([]);
+const loading = ref(true);
+const createModalRef = ref<InstanceType<typeof CreateTravelOrderModal> | null>(
+  null
+);
 
-// Filter states
 const filters = ref({
-  status: (route.query.status as string) || '',
-  destination: (route.query.destination as string) || '',
+  status: (route.query.status as string) || "",
+  destination: (route.query.destination as string) || "",
   dateRange: {
-    start: route.query.start_date ? new Date(route.query.start_date as string) : null,
-    end: route.query.end_date ? new Date(route.query.end_date as string) : null,
-  }
-})
+    start: route.query.start_date
+      ? new Date(route.query.start_date as string)
+      : null,
+    end: route.query.end_date
+      ? new Date(route.query.end_date as string)
+      : null,
+  },
+});
 
 const statusOptions = [
-  { label: 'Todos os Status', value: 'all' },
-  { label: 'Pendente', value: 'pendente' },
-  { label: 'Aprovado', value: 'aprovado' },
-  { label: 'Cancelado', value: 'cancelado' },
-]
+  { label: "Todos os Status", value: "all" },
+  { label: "Pendente", value: "pendente" },
+  { label: "Aprovado", value: "aprovado" },
+  { label: "Cancelado", value: "cancelado" },
+];
 
-// Update query string when filters change
 const updateQueryString = () => {
-  const query: Record<string, string> = {}
+  const query: Record<string, string> = {};
 
   if (filters.value.status) {
-    query.status = filters.value.status
+    query.status = filters.value.status;
   }
   if (filters.value.destination) {
-    query.destination = filters.value.destination
+    query.destination = filters.value.destination;
   }
   if (filters.value.dateRange.start) {
-    query.start_date = filters.value.dateRange.start.toISOString().split('T')[0]
+    query.start_date = filters.value.dateRange.start
+      .toISOString()
+      .split("T")[0];
   }
   if (filters.value.dateRange.end) {
-    query.end_date = filters.value.dateRange.end.toISOString().split('T')[0]
+    query.end_date = filters.value.dateRange.end
+      .toISOString()
+      .split("T")[0];
   }
 
-  router.push({ query })
-}
+  router.push({ query });
+};
 
-// Watch for filter changes and update URL + fetch data
-watch(() => [filters.value.status, filters.value.destination, filters.value.dateRange], () => {
-  updateQueryString()
-  fetchTravelOrders()
-}, { deep: true })
+watch(
+  () => [
+    filters.value.status,
+    filters.value.destination,
+    filters.value.dateRange,
+  ],
+  () => {
+    updateQueryString();
+    fetchTravelOrders();
+  },
+  { deep: true }
+);
 
-// Watch for route query changes to sync filters
-watch(() => route.query, (newQuery) => {
-  filters.value.status = (newQuery.status as string) || ''
-  filters.value.destination = (newQuery.destination as string) || ''
-  filters.value.dateRange = {
-    start: newQuery.start_date ? new Date(newQuery.start_date as string) : null,
-    end: newQuery.end_date ? new Date(newQuery.end_date as string) : null,
-  }
-  fetchTravelOrders()
-}, { immediate: false })
+watch(
+  () => route.query,
+  (newQuery) => {
+    filters.value.status = (newQuery.status as string) || "";
+    filters.value.destination = (newQuery.destination as string) || "";
+    filters.value.dateRange = {
+      start: newQuery.start_date
+        ? new Date(newQuery.start_date as string)
+        : null,
+      end: newQuery.end_date
+        ? new Date(newQuery.end_date as string)
+        : null,
+    };
+    fetchTravelOrders();
+  },
+  { immediate: false }
+);
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('pt-BR')
-}
+  return new Date(dateString).toLocaleDateString("pt-BR");
+};
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(amount)
-}
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(amount);
+};
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status.toLowerCase()) {
-    case 'aprovado':
-      return 'default' // green
-    case 'pendente':
-      return 'secondary' // yellow  
-    case 'cancelado':
-      return 'destructive' // red
+    case "aprovado":
+      return "default";
+    case "pendente":
+      return "secondary";
+    case "cancelado":
+      return "destructive";
     default:
-      return 'outline'
+      return "outline";
   }
-}
+};
 
 const viewDetails = (orderId: number) => {
-  router.push(`/travel-order/${orderId}`)
-}
+  router.push(`/travel-order/${orderId}`);
+};
 
 const handleLogout = () => {
-  logout()
-}
+  logout();
+};
 
 const fetchTravelOrders = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const filterParams: TravelOrderFilters = {}
+    const filterParams: TravelOrderFilters = {};
 
     if (filters.value.status) {
-      filterParams.status = filters.value.status !== 'all' ? filters.value.status : ''
+      filterParams.status =
+        filters.value.status !== "all" ? filters.value.status : "";
     }
     if (filters.value.destination) {
-      filterParams.destination = filters.value.destination
+      filterParams.destination = filters.value.destination;
     }
     if (filters.value.dateRange.start) {
-      filterParams.start_date = filters.value.dateRange.start.toISOString().split('T')[0]
+      filterParams.start_date = filters.value.dateRange.start
+        .toISOString()
+        .split("T")[0];
     }
     if (filters.value.dateRange.end) {
-      filterParams.end_date = filters.value.dateRange.end.toISOString().split('T')[0]
+      filterParams.end_date = filters.value.dateRange.end
+        .toISOString()
+        .split("T")[0];
     }
 
-    const response = await getTravelOrders(filterParams)
-    travelOrders.value = response.data
+    const response = await getTravelOrders(filterParams);
+    travelOrders.value = response.data;
 
     // Toast com número de resultados (apenas quando há filtros aplicados)
-    const hasFilters = filterParams.status || filterParams.destination || filterParams.start_date || filterParams.end_date
+    const hasFilters =
+      filterParams.status ||
+      filterParams.destination ||
+      filterParams.start_date ||
+      filterParams.end_date;
     if (hasFilters) {
-      const count = response.data.length
-      toast.info(`${count} viagem${count !== 1 ? 'ns' : ''} encontrada${count !== 1 ? 's' : ''}`)
+      const count = response.data.length;
+      toast.info(
+        `${count} viage${count !== 1 ? "ns" : "m"} encontrada${count !== 1 ? "s" : ""
+        }`
+      );
     }
   } catch (error) {
-    console.error('Failed to fetch travel orders:', error)
-    toast.error('Erro ao carregar viagens')
+    console.error("Failed to fetch travel orders:", error);
+    toast.error("Erro ao carregar viagens");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const refreshData = async () => {
-  await fetchTravelOrders()
-  toast.success('Dados atualizados!')
-}
+  await fetchTravelOrders();
+  toast.success("Dados atualizados!");
+};
 
 const clearFilters = () => {
   filters.value = {
-    status: '',
-    destination: '',
-    dateRange: { start: null, end: null }
-  }
-  toast.success('Filtros limpos com sucesso!')
-}
+    status: "",
+    destination: "",
+    dateRange: { start: null, end: null },
+  };
+  toast.success("Filtros limpos com sucesso!");
+};
 
 onMounted(async () => {
-  await fetchTravelOrders()
-})
+  await fetchTravelOrders();
+});
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
     <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900">
-              Sistema de Viagens
-            </h1>
-            <p v-if="user" class="text-sm text-gray-600 mt-1">
-              Bem-vindo, {{ user?.name }}
-              <Badge v-if="isAdmin" variant="secondary" class="ml-2">Admin</Badge>
-            </p>
+      <nav class="relative z-20 flex justify-between items-center p-6 md:px-12">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-sky-500 text-sky-100 backdrop-blur-sm rounded-lg flex items-center justify-center">
+            <svg class="size-5 text-sky-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5zm0 4.68c.5 0 .95.43.95.95v3.48L18 13.26v1.27l-5.05-1.58v3.47l1.26.95v.95L12 17.68l-2.21.64v-.95l1.26-.95v-3.47L6 14.53v-1.27l5.05-3.15V6.63c0-.52.45-.95.95-.95" />
+            </svg>
           </div>
-          <Button @click="handleLogout" variant="outline" class="text-red-600 border-red-600 hover:bg-red-50">
-            Sair
-          </Button>
+          <span class="text-sky-500 font-bold text-xl">Onfly</span>
         </div>
-      </div>
-    </header>
 
-    <!-- Main Content -->
+        <div class="flex space-x-3">
+          <template v-if="!user">
+            <Button @click="goToLogin" variant="outline" size="sm">
+              Login
+            </Button>
+            <Button @click="goToRegister" size="sm">
+              Cadastrar
+            </Button>
+          </template>
+          <template v-else>
+            <span class="text-sky-500 font-medium">Olá, {{ user.name }}</span>
+            <Button @click="logout" variant="outline" size="sm" class="gap-2 hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z" />
+              </svg>
+              Logout
+            </Button>
+          </template>
+        </div>
+      </nav>
+    </header>
+    <div class="pl-8 pt-8">
+      <h1 class="text-3xl font-bold text-gray-900">Sistema de Viagens</h1>
+      <p v-if="user" class="text-sm text-gray-600 mt-1">
+        Bem-vindo, {{ user?.name }}
+        <Badge v-if="isAdmin" variant="secondary" class="ml-2">Admin</Badge>
+      </p>
+    </div>
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
-        <!-- Filters Section -->
         <div class="bg-white rounded-lg shadow p-6 mb-6">
           <div class="flex flex-wrap gap-4 items-end">
-            <!-- Status Filter -->
             <div class="flex-1 min-w-[200px]">
               <Label for="status-filter" class="text-sm font-medium">Status</Label>
               <Select v-model="filters.status">
@@ -225,34 +281,29 @@ onMounted(async () => {
               </Select>
             </div>
 
-            <!-- Destination Filter -->
             <div class="flex-1 min-w-[200px]">
               <Label for="destination-filter" class="text-sm font-medium">Destino</Label>
               <Input id="destination-filter" v-model="filters.destination" type="text"
                 placeholder="Filtrar por destino..." class="w-full" />
             </div>
 
-            <!-- Date Range Filter -->
             <div class="flex-1 min-w-[250px]">
               <Label class="text-sm font-medium">Período</Label>
               <DateRangePicker v-model="filters.dateRange" placeholder="Selecione o período" />
             </div>
 
-            <!-- Clear Filters Button -->
             <div>
               <Button variant="outline" @click="clearFilters" class="w-full">
                 Limpar Filtros
               </Button>
             </div>
 
-            <!-- Create Order Button -->
             <div>
               <CreateTravelOrderModal ref="createModalRef" :on-success="refreshData" />
             </div>
           </div>
         </div>
 
-        <!-- Travel Orders Table -->
         <div class="bg-white shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -261,11 +312,15 @@ onMounted(async () => {
 
             <div v-if="loading" class="text-center py-8">
               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p class="mt-2 text-gray-500">Carregando viagens...</p>
+              <p class="mt-2 text-gray-500">
+                Carregando viagens...
+              </p>
             </div>
 
             <div v-else-if="travelOrders.length === 0" class="text-center py-8">
-              <p class="text-gray-500">Nenhuma viagem encontrada.</p>
+              <p class="text-gray-500">
+                Nenhuma viagem encontrada.
+              </p>
             </div>
 
             <div v-else class="overflow-hidden">
@@ -287,13 +342,18 @@ onMounted(async () => {
                       {{ order.destination }}
                     </TableCell>
                     <TableCell>
-                      {{ formatDate(order.departure_date) }}
+                      {{
+                        formatDate(order.departure_date)
+                      }}
                     </TableCell>
                     <TableCell>
                       {{ formatDate(order.return_date) }}
                     </TableCell>
                     <TableCell>
-                      <Badge :variant="getStatusBadgeVariant(order.status)">
+                      <Badge :variant="getStatusBadgeVariant(
+                        order.status
+                      )
+                        " class="capitalize">
                         {{ order.status }}
                       </Badge>
                     </TableCell>
@@ -301,7 +361,9 @@ onMounted(async () => {
                       {{ formatCurrency(order.price) }}
                     </TableCell>
                     <TableCell class="text-right">
-                      <Button @click.stop="viewDetails(order.id)" variant="outline" size="sm">
+                      <Button @click.stop="
+                        viewDetails(order.id)
+                        " variant="outline" size="sm" class="hover:text-white">
                         Ver Detalhes
                       </Button>
                     </TableCell>

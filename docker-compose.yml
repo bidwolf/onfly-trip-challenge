@@ -18,7 +18,9 @@ services:
       - ./backend:/var/www
     networks:
       - application
-  
+    command: sh -c "php-fpm & php artisan reverb:start --host=0.0.0.0 --port=8080"
+
+
   onfly_trip_challenge_frontend:
     build:
       context: ./frontend
@@ -33,6 +35,7 @@ services:
       - onfly_trip_challenge_backend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     networks:
       - application
   onfly_trip_challenge_webserver:
@@ -43,10 +46,10 @@ services:
       - "6162:80"
     volumes:
       - ./backend:/var/www
-      - ./frontend/build:/app
       - ./docker-compose/nginx/:/etc/nginx/conf.d
     depends_on:
       - onfly_trip_challenge_backend
+      - onfly_trip_challenge_frontend
     networks:
       - application
   onfly_trip_challenge_db:
@@ -54,7 +57,7 @@ services:
     container_name: onfly_trip_challenge_db
     restart: always
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=onfly_trip_challenge_password
       - MYSQL_DATABASE=onfly_trip_challenge_db
@@ -81,7 +84,7 @@ services:
       - application
 volumes:
   onfly_trip_challenge_db_data:
-    driver: local 
+    driver: local
 networks:
   application:
     driver: bridge
