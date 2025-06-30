@@ -27,6 +27,7 @@ class TravelOrderResource extends JsonResource
             'transportation' => $this->transportation,
             'description'    => $this->description,
             'created_at'     => $this->created_at,
+            'updated_at'     => $this->updated_at,
         ];
     }
 }

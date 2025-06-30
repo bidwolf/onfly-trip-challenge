@@ -121,7 +121,7 @@ class TravelOrderService implements TravelOrderServiceInterface
         'status' => TravelOrderStatus::Cancelled->value
       ]);
       DB::commit();
-      TravelOrderCancelled::dispatch($order->fresh);
+      TravelOrderCancelled::dispatch($order->fresh());
       return $order->fresh()->toResource()->additional(
         ['message' => 'Pedido cancelado com sucesso.']
       );
@@ -139,7 +139,7 @@ class TravelOrderService implements TravelOrderServiceInterface
         'status' => TravelOrderStatus::Approved->value
       ]);
       DB::commit();
-      TravelOrderApproved::dispatch($order->fresh);
+      TravelOrderApproved::dispatch($order->fresh());
       return $order->fresh()->toResource()->additional(
         ['message' => 'Pedido aprovado com sucesso.']
       );
