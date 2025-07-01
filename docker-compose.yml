@@ -18,7 +18,7 @@ services:
       - ./backend:/var/www
     networks:
       - application
-    command: sh -c "php-fpm & php artisan reverb:start --host=0.0.0.0 --port=8080"
+    command: sh -c "php-fpm"
 
 
   onfly_trip_challenge_frontend:

@@ -98,6 +98,22 @@ Uma vez que você chegou nesse ponto parabéns você já avançou significanteme
 ```sh
 	docker-compose run --rm onfly_trip_challenge_backend php artisan test
 ```
+>[!IMPORTANT]
+> ## Testando permissões de administrador
+> Um detalhe que deve ser observado é que por padrão não há uma forma de criar um usuário administrador apenas pela API
+> Isso deve ser feito diretamente com acesso ao sistema ou banco de dados.
+> Deixei configurado nas seeders um usuário e senha que podem ser utilizados como acesso administrador
+> Para rodar a seeder basta utilizar o comando artisan abaixo:
+> ```sh
+> php artisan db:seed
+> ```
+> #### Credenciais
+> `email` : 'lucca@testOnfly.com',
+> `password` :  'onflyTest123!'
+>
+
+
+
 
 >[!TIP]
 > Também deixei disponível uma collection do postman com os endpoints desenvolvidos basta importar a collection diretemente usando o arquivo `onfly-trip-challenge.postman_collection.json` na raíz do projeto
