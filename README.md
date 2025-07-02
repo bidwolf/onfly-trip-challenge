@@ -105,11 +105,11 @@ Uma vez que você chegou nesse ponto parabéns você já avançou significanteme
 > Deixei configurado nas seeders um usuário e senha que podem ser utilizados como acesso administrador
 > Para rodar a seeder basta utilizar o comando artisan abaixo:
 > ```sh
-> php artisan db:seed
+> docker compose exec onfly_trip_challenge_backend php artisan db:seed
 > ```
 > #### Credenciais
-> `email` : 'lucca@testOnfly.com',
-> `password` :  'onflyTest123!'
+> `email` : lucca@testOnfly.com
+> `password` :  onflyTest123!
 >
 
 
