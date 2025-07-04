@@ -6,7 +6,6 @@ use App\Enum\TravelOrderStatus;
 use App\Models\TravelOrder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 use function PHPUnit\Framework\assertEquals;
@@ -65,9 +64,9 @@ class CancelTravelOrderTest extends TestCase
         $order_by_own = TravelOrder::factory(['status' => TravelOrderStatus::Pending->value])
             ->for($this->user_admin)
             ->create();
-        assertEquals($common_user_order->status, TravelOrderStatus::Pending);
-        assertEquals($order_by_own->status, TravelOrderStatus::Pending);
-        assertTrue($this->user_admin->is_admin);
+        $this->assertEquals($common_user_order->status, TravelOrderStatus::Pending);
+        $this->assertEquals($order_by_own->status, TravelOrderStatus::Pending);
+        $this->assertTrue($this->user_admin->is_admin);
         $cancel_own_order_response = $this->actingAs($this->user_admin)
             ->put(uri: route('travel-orders.cancel', $order_by_own));
         $cancel_own_order_response->assertSuccessful();
