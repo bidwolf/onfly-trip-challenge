@@ -29,7 +29,7 @@ class CancelTravelOrderTest extends TestCase
      */
     public function test_guest_got_unauthorized_while_try_to_cancel_order(): void
     {
-        $response = $this->put(route('travel-orders.cancel', ['travel_order' => 1]));
+        $response = $this->put(uri: route('travel-orders.cancel', ['travel_order' => 1]));
 
         $response->assertUnauthorized();
     }
@@ -45,10 +45,10 @@ class CancelTravelOrderTest extends TestCase
             ->for($this->common_user)
             ->create();
         $cancel_others_orders_response = $this->actingAs($this->common_user)
-            ->put(route('travel-orders.cancel', $order_by_another_user));
+            ->put(uri: route('travel-orders.cancel', $order_by_another_user));
         $cancel_others_orders_response->assertForbidden();
         $cancel_own_order_response = $this->actingAs($this->common_user)
-            ->put(route('travel-orders.cancel', $order_by_own));
+            ->put(uri: route('travel-orders.cancel', $order_by_own));
         $cancel_own_order_response->assertForbidden();
     }
     /**
@@ -69,13 +69,13 @@ class CancelTravelOrderTest extends TestCase
         assertEquals($order_by_own->status, TravelOrderStatus::Pending);
         assertTrue($this->user_admin->is_admin);
         $cancel_own_order_response = $this->actingAs($this->user_admin)
-            ->put(route('travel-orders.cancel', $order_by_own));
+            ->put(uri: route('travel-orders.cancel', $order_by_own));
         $cancel_own_order_response->assertSuccessful();
         $cancel_common_user_orders_response = $this->actingAs($this->user_admin)
-            ->put(route('travel-orders.cancel', $common_user_order));
+            ->put(uri: route('travel-orders.cancel', $common_user_order));
         $cancel_common_user_orders_response->assertSuccessful();
         $cancel_others_admin_orders_response = $this->actingAs($this->user_admin)
-            ->put(route('travel-orders.cancel', $another_admin_order));
+            ->put(uri: route('travel-orders.cancel', $another_admin_order));
         $cancel_others_admin_orders_response->assertSuccessful();
     }
     /**
