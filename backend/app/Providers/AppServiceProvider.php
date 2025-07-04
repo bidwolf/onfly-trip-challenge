@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin && $order->status !== TravelOrderStatus::Approved;
         });
         Gate::define('approve-travel-order', function (User $user, TravelOrder $order) {
-            return $user->is_admin;
+            return $user->is_admin && $order->status !== TravelOrderStatus::Cancelled;
         });
     }
 }
