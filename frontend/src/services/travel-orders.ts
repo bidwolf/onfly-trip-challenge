@@ -4,7 +4,7 @@ export type TravelOrderStatus =
   | 'aprovado'
   | 'cancelado'
 export interface TravelOrder {
-  id: number
+  id: string
   destination: string
   departure_date: string
   return_date: string
@@ -69,7 +69,7 @@ export const getTravelOrders = async (filters?: TravelOrderFilters): Promise<Tra
   return result
 }
 
-export const getTravelOrderById = async (id: number): Promise<TravelOrderResponse> => {
+export const getTravelOrderById = async (id: TravelOrder['id']): Promise<TravelOrderResponse> => {
   const { data: result } = await api.get<TravelOrderResponse>(`/travel-orders/${id}`)
   return result
 }
@@ -81,16 +81,16 @@ export const createTravelOrder = async (
   return result
 }
 
-export const approveTravelOrder = async (id: number): Promise<TravelOrderResponse> => {
+export const approveTravelOrder = async (id: TravelOrder['id']): Promise<TravelOrderResponse> => {
   const { data: result } = await api.patch<TravelOrderResponse>(`/travel-orders/${id}/approve`)
   return result
 }
 
-export const cancelTravelOrder = async (id: number): Promise<TravelOrderResponse> => {
+export const cancelTravelOrder = async (id: TravelOrder['id']): Promise<TravelOrderResponse> => {
   const { data: result } = await api.patch<TravelOrderResponse>(`/travel-orders/${id}/cancel`)
   return result
 }
 
-export const deleteTravelOrder = async (id: number): Promise<void> => {
+export const deleteTravelOrder = async (id: TravelOrder['id']): Promise<void> => {
   await api.delete(`/travel-orders/${id}`)
 }

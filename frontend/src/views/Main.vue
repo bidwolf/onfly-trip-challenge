@@ -3,7 +3,9 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import {
   getTravelOrders,
+  type TravelOrder,
   type TravelOrderFilters,
+  type TravelOrderStatus,
 } from "@/services/travel-orders";
 import { useAuth } from "@/composables/useAuth";
 import { toast } from "vue-sonner";
@@ -29,14 +31,13 @@ import {
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import CreateTravelOrderModal from "@/components/CreateTravelOrderModal.vue";
 
-interface TravelOrder {
-  id: number;
-  destination: string;
-  departure_date: string;
-  return_date: string;
-  status: string;
-  price: number;
-}
+
+const TravelOrderNotificationTypes = {
+  TRAVEL_ORDER_APPROVED: "App\\Notifications\\TravelOrderApprovedNotification",
+  TRAVEL_ORDER_CANCELLED: "App\\Notifications\\TravelOrderCancelledNotification",
+} as const;
+
+type TravelOrderNotificationTypes = typeof TravelOrderNotificationTypes[keyof typeof TravelOrderNotificationTypes];
 
 const router = useRouter();
 const route = useRoute();
@@ -145,12 +146,8 @@ const getStatusBadgeVariant = (status: string) => {
   }
 };
 
-const viewDetails = (orderId: number) => {
+const viewDetails = (orderId: string) => {
   router.push(`/travel-order/${orderId}`);
-};
-
-const handleLogout = () => {
-  logout();
 };
 
 const fetchTravelOrders = async () => {
@@ -214,7 +211,48 @@ const clearFilters = () => {
   toast.success("Filtros limpos com sucesso!");
 };
 
+const echo = window.Echo;
 onMounted(async () => {
+  if (user.value) {
+    const userId = user.value.id || '';
+    echo.private('App.Models.User.' + userId)
+      .notification((notification: {
+        type: TravelOrderNotificationTypes;
+        amount: number;
+        id: string;
+        status: TravelOrderStatus;
+      }) => {
+        if (notification.type === TravelOrderNotificationTypes.TRAVEL_ORDER_APPROVED) {
+          toast.success("Seu pedido foi aprovado!", {
+            description: `Parabéns, seu pedido de viagem com budget de ${Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(notification.amount)
+              } foi aprovado.`,
+            duration: 5000,
+            action: {
+              label: "Ver detalhes",
+              onClick: () => {
+                viewDetails(notification.id);
+              },
+            },
+          });
+        }
+        if (notification.type === TravelOrderNotificationTypes.TRAVEL_ORDER_CANCELLED) {
+          toast.error("Sua solicitação foi cancelada.", {
+            description: `Seu pedido de viagem #${notification.id} foi cancelado. `,
+            duration: 5000,
+            action: {
+              label: "Ver detalhes",
+              onClick: () => {
+                viewDetails(notification.id);
+              },
+            },
+          });
+        }
+      });
+
+  }
   await fetchTravelOrders();
 });
 </script>
@@ -235,15 +273,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex space-x-3">
-          <template v-if="!user">
-            <Button @click="goToLogin" variant="outline" size="sm">
-              Login
-            </Button>
-            <Button @click="goToRegister" size="sm">
-              Cadastrar
-            </Button>
-          </template>
-          <template v-else>
+          <template v-if="user">
             <span class="text-sky-500 font-medium">Olá, {{ user.name }}</span>
             <Button @click="logout" variant="outline" size="sm" class="gap-2 hover:text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

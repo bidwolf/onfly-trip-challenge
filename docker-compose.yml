@@ -12,13 +12,13 @@ services:
     working_dir: /var/www
     ports:
       - "8000:8000"
+      - "8080:8080"
     depends_on:
       - onfly_trip_challenge_db
     volumes:
       - ./backend:/var/www
     networks:
       - application
-    command: sh -c "php-fpm"
 
 
   onfly_trip_challenge_frontend:

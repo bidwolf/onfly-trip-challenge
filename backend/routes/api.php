@@ -14,6 +14,6 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me'])->name('me');
     Route::apiResource('travel-orders', TravelOrderController::class);
-    Route::match(['patch', 'put'], 'travel-orders/{travel_order}/approve', [TravelOrderController::class, 'approve']);
-    Route::match(['patch', 'put'], 'travel-orders/{travel_order}/cancel', [TravelOrderController::class, 'cancel']);
+    Route::match(['patch', 'put'], 'travel-orders/{travel_order}/approve', [TravelOrderController::class, 'approve'])->name('travel-orders.approve');
+    Route::match(['patch', 'put'], 'travel-orders/{travel_order}/cancel', [TravelOrderController::class, 'cancel'])->name('travel-orders.cancel');
 });

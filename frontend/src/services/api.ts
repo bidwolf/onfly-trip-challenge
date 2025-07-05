@@ -8,7 +8,7 @@ const api: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 })
-
+api.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     const token = localStorage.getItem('token')
