@@ -53,6 +53,7 @@ Para instalar e configurar o ambiente de desenvolvimento do projeto, siga os pas
 1. Navegue até a raiz do projeto e execute o comando para iniciar os contêineres:
     ```bash
     cd ..
+    docker-compose build 
     docker-compose up -d
     ```
 2. Aguarde até que todos os contêineres estejam em execução. Você pode verificar o status dos contêineres com:
@@ -83,11 +84,20 @@ Para instalar e configurar o ambiente de desenvolvimento do projeto, siga os pas
 ### Rodando a aplicação
 
 Ao rodar os containers do docker, você já consegue utilizar os containers adequadamente ao acessar:
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:6162/frontend
 - Backend: http://localhost:6162/api
+
+Entretanto, para concluir o setup, você precisa habilitar as queues do Laravel e o WebSocket do reverb.
+Para isso, execute o seguinte comando:
+
 ```sh
-docker compose up -d
+docker comopse exec onfly_trip_challenge_backend php artisan queue:work
+docker compose exec onfly_trip_challenge_backend php artisan reverb:serve
 ```
+>[!IMPORTANT]
+> Esses comandos devem ser executados em terminais separados, pois eles ficarão rodando em background para processar as filas e as notificações em tempo real.
+
+
 >[!NOTE]
 >Você também pode optar por executar o sistema localmente com suas próprias configurações de ambiente.
 > Porém seria necessário ter o PHP instalado, além do nodeJS, e o composer.
