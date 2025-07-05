@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.7",
+    "@types/pusher-js": "^4.2.2",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
     "laravel-echo": "^2.1.6",
