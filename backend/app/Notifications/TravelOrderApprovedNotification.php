@@ -10,7 +10,7 @@ use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TravelOrderCancelled extends Notification
+class TravelOrderApprovedNotification extends Notification
 {
     use Queueable;
 
@@ -59,7 +59,7 @@ class TravelOrderCancelled extends Notification
      */
     public function shouldSend(object $notifiable, string $channel): bool
     {
-        return $this->order->status === TravelOrderStatus::Cancelled;
+        return $this->order->status === TravelOrderStatus::Approved;
     }
     /**
      * Get the broadcastable representation of the notification.

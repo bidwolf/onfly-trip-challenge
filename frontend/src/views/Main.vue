@@ -33,8 +33,8 @@ import CreateTravelOrderModal from "@/components/CreateTravelOrderModal.vue";
 
 
 const TravelOrderNotificationTypes = {
-  TRAVEL_ORDER_APPROVED: "App\\Notifications\\TravelOrderApproved",
-  TRAVEL_ORDER_CANCELLED: "App\\Notifications\\TravelOrderCancelled",
+  TRAVEL_ORDER_APPROVED: "App\\Notifications\\TravelOrderApprovedNotification",
+  TRAVEL_ORDER_CANCELLED: "App\\Notifications\\TravelOrderCancelledNotification",
 } as const;
 
 type TravelOrderNotificationTypes = typeof TravelOrderNotificationTypes[keyof typeof TravelOrderNotificationTypes];
