@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTO\TravelOrderDTO;
 use App\Enum\TravelOrderStatus;
 use App\Http\Requests\StoreTravelOrderRequest;
+use App\Http\Requests\UpdateTravelOrderRequest;
 use App\Models\TravelOrder;
 use App\Services\TravelOrderService;
 use Illuminate\Http\Request;
@@ -105,9 +106,11 @@ class TravelOrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TravelOrder $travel_order)
+    public function update(UpdateTravelOrderRequest $request, TravelOrder $travel_order)
     {
-        //
+        Gate::authorize('update', $travel_order);
+        $new_order = $request->validated();
+        return $this->service->updateOrder($new_order, $travel_order);
     }
 
     /**

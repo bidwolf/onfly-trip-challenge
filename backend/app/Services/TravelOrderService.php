@@ -58,6 +58,15 @@ interface TravelOrderServiceInterface
   public function approveOrder(
     TravelOrder $order
   ): TravelOrderResource;
+  /**
+   * Update the current travel order 
+   * @param array $data the order data to be updated
+   * @param TravelOrder $order the order that is going to be updated
+   */
+  public function updateOrder(
+    array $data,
+    TravelOrder $order,
+  ): TravelOrderResource;
 }
 class TravelOrderService implements TravelOrderServiceInterface
 {
@@ -146,6 +155,18 @@ class TravelOrderService implements TravelOrderServiceInterface
     } catch (\Error $e) {
       DB::rollBack();
       abort(500, 'Um erro inesperado ocorreu ao tentar aprovar este pedido. Por favor tente novamente mais tarde.');
+    }
+  }
+  public function updateOrder(array $data, TravelOrder $order): TravelOrderResource
+  {
+    try {
+      DB::beginTransaction();
+      $order->update($data);
+      DB::commit();
+      return $order->fresh()->toResource()->additional(['message' => 'Pedido atualizado com sucesso.']);
+    } catch (\Throwable $th) {
+      DB::rollBack();
+      abort(500, 'Um erro inesperado ocorreu ao tentar atualizar este pedido. Por favor tente novamente mais tarde.');
     }
   }
 }

@@ -29,7 +29,7 @@ readonly class TravelOrderDTO
       destination: $data['destination'],
       departure_date: Carbon::parse($data['departure_date']),
       return_date: Carbon::parse($data['return_date']),
-      price: $data['price'],
+      price: $data['price'] ?? "0.0",
       hosting: array_key_exists('hosting', $data) ? $data['hosting'] : "",
       transportation: array_key_exists('transportation', $data) ? $data['transportation'] : "",
       description: array_key_exists('description', $data) ? $data['description'] : "",
