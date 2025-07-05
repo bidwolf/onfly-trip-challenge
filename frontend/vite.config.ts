@@ -10,6 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  base: '/frontend/',
   server: {
     host: '0.0.0.0',
     port: 3000,
