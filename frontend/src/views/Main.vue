@@ -223,6 +223,7 @@ onMounted(async () => {
         status: TravelOrderStatus;
       }) => {
         if (notification.type === TravelOrderNotificationTypes.TRAVEL_ORDER_APPROVED) {
+          fetchTravelOrders();
           toast.success("Seu pedido foi aprovado!", {
             description: `Parabéns, seu pedido de viagem com budget de ${Intl.NumberFormat("pt-BR", {
               style: "currency",
@@ -239,6 +240,7 @@ onMounted(async () => {
           });
         }
         if (notification.type === TravelOrderNotificationTypes.TRAVEL_ORDER_CANCELLED) {
+          fetchTravelOrders();
           toast.error("Sua solicitação foi cancelada.", {
             description: `Seu pedido de viagem #${notification.id} foi cancelado. `,
             duration: 5000,
