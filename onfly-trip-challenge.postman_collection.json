@@ -251,18 +251,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/travelOrders/:travel-order",
+							"raw": "{{BASE_URL}}/travel-orders/:travel-order",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"travelOrders",
+								"travel-orders",
 								":travel-order"
 							],
 							"variable": [
 								{
 									"key": "travel-order",
-									"value": ""
+									"value": "{{travel_order}}"
 								}
 							]
 						}
@@ -273,14 +273,23 @@
 					"name": "list orders",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/travel-orders",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"travel-orders"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "cancel order",
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/travel-orders/:travel-order/cancel",
@@ -305,7 +314,7 @@
 				{
 					"name": "approve order",
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/travel-orders/:travel-order/approve",
@@ -326,9 +335,86 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "update order",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requester_name\": \"Teste\",\n    \"destination\": \"São Paulo\",\n    \"return_date\": \"2026-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/travel-orders/:travel-order",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"travel-orders",
+								":travel-order"
+							],
+							"variable": [
+								{
+									"key": "travel-order",
+									"value": "{{travel_order}}"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Rotas relacionadas com os pedidos de viagem no sistema."
+		},
+		{
+			"name": "broadcasting",
+			"item": [
+				{
+					"name": "auth",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"socket_id\": \"515441997.592388055\",\n    \"channel_name\": \"private-App.Models.User.2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/broadcasting/auth",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"broadcasting",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "me",
