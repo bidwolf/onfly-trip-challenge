@@ -47,8 +47,8 @@ class RegisterUserTest extends TestCase
             'password_confirmation' => 'P4assword!'
         ];
         $RegistrationResponse = $this->post('/api/auth/register', $data);
-        $RegistrationResponse->assertStatus(201); # Cria um usuário
-        $duplicatedRegisterResponse = $this->post('/api/auth/register', $data); # Tenta criar outro usuário com email igual
-        $duplicatedRegisterResponse->assertStatus(422)->assertJsonValidationErrors('email');
+        $RegistrationResponse->assertCreated(); # Creates an user
+        $duplicatedRegisterResponse = $this->post('/api/auth/register', $data); # Try to create a new user with the same email registered before
+        $duplicatedRegisterResponse->assertUnprocessable()->assertJsonValidationErrors('email');
     }
 }
